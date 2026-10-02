@@ -1,7 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
@@ -24,11 +24,11 @@ app.use(express.urlencoded({ extended: true }));
 let todos = [
   {
     id: 1,
-    title: "Estudar CI/CD na FIAP",
-    description: "Aprender GitHub Actions e Jenkins",
+    title: 'Estudar CI/CD na FIAP',
+    description: 'Aprender GitHub Actions e Jenkins',
     completed: false,
-    priority: "high",
-    category: "education",
+    priority: 'high',
+    category: 'education',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -41,20 +41,20 @@ const validateTodo = (req, res, next) => {
   const { title, priority, category } = req.body;
 
   if (!title || title.trim().length === 0) {
-    return res.status(400).json({ error: "Title is required" });
+    return res.status(400).json({ error: 'Title is required' });
   }
 
-  if (priority && !["low", "medium", "high"].includes(priority)) {
+  if (priority && !['low', 'medium', 'high'].includes(priority)) {
     return res
       .status(400)
-      .json({ error: "Priority must be low, medium, or high" });
+      .json({ error: 'Priority must be low, medium, or high' });
   }
 
   if (
     category &&
-    !["personal", "work", "education", "health"].includes(category)
+    !['personal', 'work', 'education', 'health'].includes(category)
   ) {
-    return res.status(400).json({ error: "Invalid category" });
+    return res.status(400).json({ error: 'Invalid category' });
   }
 
   next();
@@ -63,23 +63,23 @@ const validateTodo = (req, res, next) => {
 // Routes
 
 // Health check
-app.get("/health", (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
-    status: "OK",
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    service: "FIAP Todo API",
-    version: process.env.VERSION || "1.0.0",
-    environment: process.env.NODE_ENV || "development",
+    service: 'FIAP Todo API',
+    version: process.env.VERSION || '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 
 // Get all todos with filtering
-app.get("/api/todos", (req, res) => {
+app.get('/api/todos', (req, res) => {
   let filteredTodos = [...todos];
 
   // Filter by completion status
   if (req.query.completed !== undefined) {
-    const completed = req.query.completed === "true";
+    const completed = req.query.completed === 'true';
     filteredTodos = filteredTodos.filter(
       (todo) => todo.completed === completed,
     );
@@ -117,30 +117,30 @@ app.get("/api/todos", (req, res) => {
 });
 
 // Get todo by ID
-app.get("/api/todos/:id", (req, res) => {
+app.get('/api/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const todo = todos.find((t) => t.id === id);
 
   if (!todo) {
-    return res.status(404).json({ error: "Todo not found" });
+    return res.status(404).json({ error: 'Todo not found' });
   }
 
   res.json(todo);
 });
 
 // Create new todo
-app.post("/api/todos", validateTodo, (req, res) => {
+app.post('/api/todos', validateTodo, (req, res) => {
   const {
     title,
     description,
-    priority = "medium",
-    category = "personal",
+    priority = 'medium',
+    category = 'personal',
   } = req.body;
 
   const newTodo = {
     id: nextId++,
     title: title.trim(),
-    description: description ? description.trim() : "",
+    description: description ? description.trim() : '',
     completed: false,
     priority,
     category,
@@ -153,12 +153,12 @@ app.post("/api/todos", validateTodo, (req, res) => {
 });
 
 // Update todo
-app.put("/api/todos/:id", validateTodo, (req, res) => {
+app.put('/api/todos/:id', validateTodo, (req, res) => {
   const id = parseInt(req.params.id);
   const todoIndex = todos.findIndex((t) => t.id === id);
 
   if (todoIndex === -1) {
-    return res.status(404).json({ error: "Todo not found" });
+    return res.status(404).json({ error: 'Todo not found' });
   }
 
   const { title, description, completed, priority, category } = req.body;
@@ -180,34 +180,34 @@ app.put("/api/todos/:id", validateTodo, (req, res) => {
 });
 
 // Delete todo
-app.delete("/api/todos/:id", (req, res) => {
+app.delete('/api/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const todoIndex = todos.findIndex((t) => t.id === id);
 
   if (todoIndex === -1) {
-    return res.status(404).json({ error: "Todo not found" });
+    return res.status(404).json({ error: 'Todo not found' });
   }
 
   const deletedTodo = todos.splice(todoIndex, 1)[0];
-  res.json({ message: "Todo deleted successfully", todo: deletedTodo });
+  res.json({ message: 'Todo deleted successfully', todo: deletedTodo });
 });
 
 // Get statistics
-app.get("/api/stats", (req, res) => {
+app.get('/api/stats', (req, res) => {
   const stats = {
     total: todos.length,
     completed: todos.filter((t) => t.completed).length,
     pending: todos.filter((t) => !t.completed).length,
     byPriority: {
-      high: todos.filter((t) => t.priority === "high").length,
-      medium: todos.filter((t) => t.priority === "medium").length,
-      low: todos.filter((t) => t.priority === "low").length,
+      high: todos.filter((t) => t.priority === 'high').length,
+      medium: todos.filter((t) => t.priority === 'medium').length,
+      low: todos.filter((t) => t.priority === 'low').length,
     },
     byCategory: {
-      personal: todos.filter((t) => t.category === "personal").length,
-      work: todos.filter((t) => t.category === "work").length,
-      education: todos.filter((t) => t.category === "education").length,
-      health: todos.filter((t) => t.category === "health").length,
+      personal: todos.filter((t) => t.category === 'personal').length,
+      work: todos.filter((t) => t.category === 'work').length,
+      education: todos.filter((t) => t.category === 'education').length,
+      health: todos.filter((t) => t.category === 'health').length,
     },
   };
 
@@ -217,12 +217,12 @@ app.get("/api/stats", (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
+  res.status(404).json({ error: 'Route not found' });
 });
 
 module.exports = app;
