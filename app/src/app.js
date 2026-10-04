@@ -63,7 +63,7 @@ const validateTodo = (req, res, next) => {
 // Routes
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
@@ -193,7 +193,7 @@ app.delete('/api/todos/:id', (req, res) => {
 });
 
 // Get statistics
-app.get('/api/stats', (req, res) => {
+app.get('/api/stats', (_, res) => {
   const stats = {
     total: todos.length,
     completed: todos.filter((t) => t.completed).length,
@@ -215,13 +215,13 @@ app.get('/api/stats', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, _, res, _) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // 404 handler
-app.use((req, res) => {
+app.use((_, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
